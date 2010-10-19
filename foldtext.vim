@@ -1,5 +1,5 @@
 " Base {{{
-function Foldtext_base(...)
+function! Foldtext_base(...)
     " use the argument for display if possible, otherwise the current line {{{
     if a:0 > 0
         let line = a:1
@@ -31,15 +31,21 @@ function Foldtext_base(...)
     endif
     " }}}
     " remove any remaining leading or trailing whitespace {{{
-    let line = substitute(line, '^\s*\(.\{-}\)\s*$', '\1', '')
+    " let line = substitute(line, '^\s*\(.\{-}\)\s*$', '\1', '')
+    let line = substitute(line, '\(.\{-}\)\s*$', '\1', '')
     " }}}
     " align everything, and pad the end of the display with - {{{
-    let alignment = &columns - 18 - v:foldlevel
+    " let alignment = &columns - 18 - v:foldlevel
+
+    let cnt = printf('[ %5s ] ',  (v:foldend - v:foldstart + 1))
+    let line_width = winwidth(0) - &foldcolumn
+    let alignment = line_width - len(cnt) - 3 - v:foldlevel
     let line = strpart(printf('%-' . alignment . 's', line), 0, alignment)
-    let line = substitute(line, '\%( \)\@<= \%( *$\)\@=', '-', 'g')
+    let line = substitute(line, '\%( \)\@<= \%( *$\)\@=', ' ', 'g')
     " }}}
     " format the line count {{{
-    let cnt = printf('%13s', '(' . (v:foldend - v:foldstart + 1) . ' lines) ')
+    " let cnt = printf('%15s', '[' . (v:foldend - v:foldstart + 1) . ' lines] ')
+    " let cnt = printf(' %11s ',  (v:foldend - v:foldstart + 1) )
     " }}}
     return '+-' . v:folddashes . ' ' . line . cnt
 endfunction
@@ -47,10 +53,10 @@ endfunction
 " Latex {{{
 let s:latex_types = {'thm': 'Theorem', 'cor':  'Corollary',
                    \ 'lem': 'Lemma',   'defn': 'Definition'}
-function s:lower_letter(i) " {{{
+function! s:lower_letter(i) " {{{
     return tolower(s:upper_letter(a:i))
 endfunction " }}}
-function s:roman_numeral(i) " {{{
+function! s:roman_numeral(i) " {{{
     let numeral = ''
     let chars = 'ivxlcdm'
     let i = a:i
@@ -86,14 +92,14 @@ function s:roman_numeral(i) " {{{
 
     return repeat('m', i) . numeral
 endfunction " }}}
-function s:upper_letter(i) " {{{
+function! s:upper_letter(i) " {{{
     if a:i <= 26
         return nr2char(char2nr('A') + a:i - 1)
     else
         return 'ERROR'
     endif
 endfunction " }}}
-function s:enumeration(depth, index) " {{{
+function! s:enumeration(depth, index) " {{{
     if a:depth == 0
         return a:index + 1
     elseif a:depth == 1
@@ -106,7 +112,7 @@ function s:enumeration(depth, index) " {{{
         return 'Error: invalid depth'
     endif
 endfunction " }}}
-function Foldtext_latex() " {{{
+function! Foldtext_latex() " {{{
     let line = getline(v:foldstart)
     " format theorems/etc nicely {{{
     let matches = matchlist(line, '\\begin{\([^}]*\)}')
@@ -192,7 +198,7 @@ function Foldtext_latex() " {{{
 endfunction " }}}
 " }}}
 " C++ {{{
-function Foldtext_cpp()
+function! Foldtext_cpp()
     let line = getline(v:foldstart)
     " strip out // comments {{{
     let block_open = stridx(line, '/*')
@@ -205,7 +211,7 @@ function Foldtext_cpp()
 endfunction
 " }}}
 " Perl {{{
-function Foldtext_perl()
+function! Foldtext_perl()
     let line = getline(v:foldstart)
     " format sub names with their arguments {{{
     let matches = matchlist(line,
