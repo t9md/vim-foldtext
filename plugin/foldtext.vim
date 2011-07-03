@@ -39,6 +39,11 @@ function! Foldtext_base(...)
 
     let cnt = printf('[ %5s ] ',  (v:foldend - v:foldstart + 1))
     let line_width = winwidth(0) - &foldcolumn
+
+    if &number == 1
+        let line_width -= max([&numberwidth, len(line('$'))]) + 1
+    endif
+
     let alignment = line_width - len(cnt) - 3 - v:foldlevel
     let line = strpart(printf('%-' . alignment . 's', line), 0, alignment)
     let line = substitute(line, '\%( \)\@<= \%( *$\)\@=', ' ', 'g')
