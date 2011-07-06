@@ -41,7 +41,7 @@ function! Foldtext_base(...)
     let line_width = winwidth(0) - &foldcolumn
 
     if &number == 1
-        let line_width -= max([&numberwidth, len(line('$'))]) + 1
+        let line_width -= max([&numberwidth, len(line('$'))])
     endif
 
     let alignment = line_width - len(cnt) - 3 - v:foldlevel
