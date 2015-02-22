@@ -44,7 +44,8 @@ function! Foldtext_base(...)
         let line_width -= max([&numberwidth, len(line('$'))])
     endif
 
-    let alignment = line_width - len(cnt) - 3 - v:foldlevel
+    " let alignment = line_width - len(cnt) - 3 - v:foldlevel
+    let alignment = line_width - len(cnt)
     let line = strpart(printf('%-' . alignment . 's', line), 0, alignment)
     let line = substitute(line, '\%( \)\@<= \%( *$\)\@=', ' ', 'g')
     " }}}
@@ -52,7 +53,14 @@ function! Foldtext_base(...)
     " let cnt = printf('%15s', '[' . (v:foldend - v:foldstart + 1) . ' lines] ')
     " let cnt = printf(' %11s ',  (v:foldend - v:foldstart + 1) )
     " }}}
-    return '+-' . v:folddashes . ' ' . line . cnt
+    " n = v:foldlevel == 0 ? '' : v:foldlevel
+    " call Plog(v:foldlevl)
+    if v:foldlevel > 1
+      let line = '▸' . line[0:(-1  - v:foldlevel)]
+    endif
+    return line . cnt
+    " return '+-' . v:folddashes . ' ' . line . cnt
+    " return v:folddashes . ' ' . line . cnt
 endfunction
 " }}}
 " Latex {{{
